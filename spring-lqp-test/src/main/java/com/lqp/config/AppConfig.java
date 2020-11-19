@@ -1,15 +1,20 @@
 package com.lqp.config;
 
+import com.lqp.service.BeanLifeCycle;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author liuqingpei
- * @Description TODO
  * @Date 2020/11/18 16:57
  */
-@Component
+@Configuration
 @ComponentScan("com.lqp")
 public class AppConfig {
 
+	@Bean(initMethod = "myInit", destroyMethod = "myDestory")
+	BeanLifeCycle getBeanLifeCycle() {
+		return new BeanLifeCycle();
+	}
 }

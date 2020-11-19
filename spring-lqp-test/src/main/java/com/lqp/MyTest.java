@@ -1,12 +1,11 @@
 package com.lqp;
 
 import com.lqp.config.AppConfig;
-import com.lqp.service.IndexService;
+import com.lqp.service.BeanLifeCycle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * @author liuqingpei
- * @Description TODO
  * @Date 2020/11/18 16:59
  */
 public class MyTest {
@@ -14,6 +13,9 @@ public class MyTest {
 		AnnotationConfigApplicationContext
 				ac
 				= new AnnotationConfigApplicationContext(AppConfig.class);
-		System.out.println(ac.getBean(IndexService.class));
+		BeanLifeCycle bean = ac.getBean(BeanLifeCycle.class);
+		System.out.println(bean);
+		System.out.println("现在开始关闭容器！");
+		ac.registerShutdownHook();
 	}
 }
