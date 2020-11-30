@@ -1,7 +1,7 @@
 package com.lqp;
 
+import com.lqp.aware.BeanLifeCycle;
 import com.lqp.config.AppConfig;
-import com.lqp.service.BeanLifeCycle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -14,7 +14,7 @@ public class MyTest {
 				ac
 				= new AnnotationConfigApplicationContext(AppConfig.class);
 		BeanLifeCycle bean = ac.getBean(BeanLifeCycle.class);
-		System.out.println(bean);
+//		System.out.println(bean);
 		System.out.println("现在开始关闭容器！");
 		ac.registerShutdownHook();
 	}

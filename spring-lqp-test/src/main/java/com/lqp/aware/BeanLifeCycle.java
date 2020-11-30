@@ -1,4 +1,4 @@
-package com.lqp.service;
+package com.lqp.aware;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;
@@ -9,12 +9,17 @@ import org.springframework.beans.factory.*;
  * @author liuqingpei
  * @Date 2020/11/19 14:19
  */
+//@Component
 public class BeanLifeCycle implements BeanFactoryAware, BeanNameAware,
 		InitializingBean, DisposableBean {
 
 	private BeanFactory beanFactory;
 
 	private String beanName;
+
+	public BeanLifeCycle() {
+		System.out.println("BeanLifeCycle构建");
+	}
 
 	/**
 	 * 这是BeanFactoryAware接口方法
@@ -24,8 +29,7 @@ public class BeanLifeCycle implements BeanFactoryAware, BeanNameAware,
 	 */
 	@Override
 	public void setBeanFactory(BeanFactory arg0) throws BeansException {
-		System.out
-				.println("【BeanFactoryAware接口】调用BeanFactoryAware.setBeanFactory()");
+		System.out.println("【BeanFactoryAware接口】调用BeanFactoryAware.setBeanFactory()");
 		this.beanFactory = arg0;
 	}
 
@@ -34,7 +38,7 @@ public class BeanLifeCycle implements BeanFactoryAware, BeanNameAware,
 	 */
 	@Override
 	public void setBeanName(String arg0) {
-		System.out.println("【BeanNameAware接口】调用BeanNameAware.setBeanName()");
+		System.out.println("【BeanNameAware接口】调用BeanNameAware.setBeanName()：" + arg0);
 		this.beanName = arg0;
 	}
 
@@ -73,4 +77,5 @@ public class BeanLifeCycle implements BeanFactoryAware, BeanNameAware,
 	public void myDestory() {
 		System.out.println("【destroy-method】调用<bean>的destroy-method属性指定的初始化方法");
 	}
+
 }

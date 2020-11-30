@@ -1,6 +1,6 @@
 package com.lqp.config;
 
-import com.lqp.service.BeanLifeCycle;
+import com.lqp.aware.BeanLifeCycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +13,17 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.lqp")
 public class AppConfig {
 
-	@Bean(initMethod = "myInit", destroyMethod = "myDestory")
+	@Bean(name = "beanLifeCycle", initMethod = "myInit", destroyMethod = "myDestory")
 	BeanLifeCycle getBeanLifeCycle() {
 		return new BeanLifeCycle();
+	}
+
+//	@Bean(name = "person", initMethod = "init", destroyMethod = "destroyMethod")
+//	Person getPerson() {
+//		return new Person();
+//	}
+
+	public AppConfig() {
+		System.out.println("AppConfig 构建");
 	}
 }
