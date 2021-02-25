@@ -17,6 +17,7 @@ public class MyBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		System.out.println("BeanPostProcessor postProcessBeforeInitialization beanName:" + beanName);
+		
 		return bean;
 	}
 

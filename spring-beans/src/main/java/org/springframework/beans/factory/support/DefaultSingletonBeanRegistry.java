@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * factoring out the common management of singleton bean instances. Note that
  * the {@link org.springframework.beans.factory.config.ConfigurableBeanFactory}
  * interface extends the {@link SingletonBeanRegistry} interface.
- *
+ *doCreateBean
  * <p>Note that this class assumes neither a bean definition concept
  * nor a specific creation process for bean instances, in contrast to
  * {@link AbstractBeanFactory} and {@link DefaultListableBeanFactory}
@@ -58,48 +58,69 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory
  */
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
-
-	/** Maximum number of suppressed exceptions to preserve. */
+	/**
+	 * Maximum number of suppressed exceptions to preserve.
+	 */
 	private static final int SUPPRESSED_EXCEPTIONS_LIMIT = 100;
-
-
-	/** Cache of singleton objects: bean name to bean instance. */
+	/**
+	 * Cache of singleton objects: bean name to bean instance. 一级缓存
+	 */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
-
-	/** Cache of singleton factories: bean name to ObjectFactory. */
-	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
-
-	/** Cache of early singleton objects: bean name to bean instance. */
+	/**
+	 * Cache of early singleton objects: bean name to bean instance. 二级缓存
+	 */
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
-
-	/** Set of registered singletons, containing the bean names in registration order. */
-	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
-
-	/** Names of beans that are currently in creation. */
+	/**
+	 * Cache of singleton factories: bean name to ObjectFactory. 三级缓存
+	 */
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+	/**
+	 * Names of beans that are currently in creation.
+	 */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
-	/** Names of beans currently excluded from in creation checks. */
+	/**
+	 * Set of registered singletons, containing the bean names in registration order.
+	 */
+	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
+
+
+	/**
+	 * Names of beans currently excluded from in creation checks.
+	 */
 	private final Set<String> inCreationCheckExclusions =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
-	/** Collection of suppressed Exceptions, available for associating related causes. */
+	/**
+	 * Collection of suppressed Exceptions, available for associating related causes.
+	 */
 	@Nullable
 	private Set<Exception> suppressedExceptions;
 
-	/** Flag that indicates whether we're currently within destroySingletons. */
+	/**
+	 * Flag that indicates whether we're currently within destroySingletons.
+	 */
 	private boolean singletonsCurrentlyInDestruction = false;
 
-	/** Disposable bean instances: bean name to disposable instance. */
+	/**
+	 * Disposable bean instances: bean name to disposable instance.
+	 */
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
-	/** Map between containing bean names: bean name to Set of bean names that the bean contains. */
+	/**
+	 * Map between containing bean names: bean name to Set of bean names that the bean contains.
+	 */
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
-	/** Map between dependent bean names: bean name to Set of dependent bean names. */
+	/**
+	 * Map between dependent bean names: bean name to Set of dependent bean names.
+	 */
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
-	/** Map between depending bean names: bean name to Set of bean names for the bean's dependencies. */
+	/**
+	 * Map between depending bean names: bean name to Set of bean names for the bean's dependencies.
+	 */
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
 
@@ -168,9 +189,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-		// Quick check for existing instance without full singleton lock
-		//检查缓存中是否存在实例
+		//先从一级缓存singletonObjects中去获取。（如果获取到就直接return）
 		Object singletonObject = this.singletonObjects.get(beanName);
+		//如果获取不到或者对象正在创建中（isSingletonCurrentlyInCreation()），那就再从二级缓存earlySingletonObjects中获取。（如果获取到就直接return）
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			singletonObject = this.earlySingletonObjects.get(beanName);
 			if (singletonObject == null && allowEarlyReference) {
@@ -188,8 +209,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 							if (singletonFactory != null) {
 								//调用预先设定的getObject方法
 								singletonObject = singletonFactory.getObject();
+								Object object = singletonFactory.getObject();
+								System.out.println("(object == singletonObject)：" + (object == singletonObject));
 								//记录在缓存中，earlySingletonObjects和singletonFactories互斥
 								this.earlySingletonObjects.put(beanName, singletonObject);
+
 								this.singletonFactories.remove(beanName);
 							}
 						}
